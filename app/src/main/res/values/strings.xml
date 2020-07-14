@@ -1,6 +1,7 @@
 <resources>
-    <string name="app_name">hdp</string>
+    <string name="app_name">heart-rate</string>
     <!-- TODO: Remove or change this placeholder text -->
+    <string name="devices">Devices</string>
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="disabled_bluetooth">Please check if Bluetooth is enabled \nand restart the app.</string>
 </resources>
