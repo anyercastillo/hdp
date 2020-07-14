@@ -6,7 +6,16 @@
     app:startDestination="@id/setupBluetooth">
     <fragment
         android:id="@+id/setupBluetooth"
-        android:name="com.anyer.hdp.SetupBluetooth"
+        android:name="com.anyer.hdp.ui.DevicesFragment"
         android:label="fragment_setup_bluetooth"
-        tools:layout="@layout/fragment_setup_bluetooth" />
+        tools:layout="@layout/fragment_devices_bluetooth" >
+        <action
+            android:id="@+id/action_setupBluetooth_to_disabledBluetoothFragment"
+            app:destination="@id/disabledBluetoothFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/disabledBluetoothFragment"
+        android:name="com.anyer.hdp.ui.DisabledBluetoothFragment"
+        android:label="fragment_disabled_bluetooth"
+        tools:layout="@layout/fragment_disabled_bluetooth" />
 </navigation>
