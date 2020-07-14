@@ -18,7 +18,7 @@ import com.anyer.hdp.databinding.FragmentDevicesBluetoothBinding
  */
 class DevicesFragment : Fragment() {
     val devicesAdapter = DevicesAdapter { device ->
-        Toast.makeText(context, "Device ${device.name} selected", Toast.LENGTH_SHORT).show()
+        device.connectGatt(context, false, gattCallback)
     }
 
     private lateinit var binding: FragmentDevicesBluetoothBinding

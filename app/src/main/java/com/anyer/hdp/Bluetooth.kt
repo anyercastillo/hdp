@@ -10,11 +10,17 @@ import com.livinglifetechway.quickpermissions_kotlin.runWithPermissions
 import java.util.*
 
 class Bluetooth {
+    companion object {
+        val HEART_RATE_SERVICE = UUID.fromString("0000180D-0000-1000-8000-00805F9B34FB")
+        val HEART_RATE_MEASUREMENT_CHARACTERISTIC = UUID.fromString("00002A37-0000-1000-8000-00805F9B34FB")
+        const val SCAN_FAILED = -1
+    }
+
     fun scanForDevices(context: Context, scanCallback: BluetoothScanCallback) {
         val adapter = BluetoothAdapter.getDefaultAdapter()
 
         if (!adapter.isEnabled) {
-            return scanCallback.onScanFailed(-1)
+            return scanCallback.onScanFailed(SCAN_FAILED)
         }
 
         scanCallback.onStopScan {
@@ -26,8 +32,7 @@ class Bluetooth {
             }
         }
 
-        val serviceUUID = UUID.fromString("0000180D-0000-1000-8000-00805F9B34FB")
-        val uuid = ParcelUuid(serviceUUID)
+        val uuid = ParcelUuid(HEART_RATE_SERVICE)
         val filter = ScanFilter.Builder().setServiceUuid(uuid).build()
         val filters = listOf(filter)
 

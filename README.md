@@ -14,3 +14,6 @@ New apps should use Bluetooth Low Energy based solutions such as BluetoothGatt.
 
 # BLE Peripheral Simulator
 https://play.google.com/store/apps/details?id=io.github.webbluetoothcg.bletestperipheral&hl=en_US
+
+# BLE specs
+https://www.bluetooth.com/xml-viewer/?src=https://www.bluetooth.com/wp-content/uploads/Sitecore-Media-Library/Gatt/Xml/Characteristics/org.bluetooth.characteristic.heart_rate_measurement.xml#tree0:0,6,1|0,7;

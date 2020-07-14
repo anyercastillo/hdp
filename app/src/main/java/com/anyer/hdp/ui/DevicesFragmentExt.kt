@@ -1,15 +1,59 @@
 package com.anyer.hdp.ui
 
 import android.bluetooth.BluetoothDevice
+import android.bluetooth.BluetoothGatt
+import android.bluetooth.BluetoothGattCallback
+import android.bluetooth.BluetoothGattCharacteristic
+import android.bluetooth.BluetoothGattCharacteristic.FORMAT_UINT8
 import android.bluetooth.le.ScanResult
+import android.util.Log
+import android.widget.Toast
 import androidx.navigation.fragment.findNavController
+import com.anyer.hdp.Bluetooth
 import com.anyer.hdp.BluetoothScanCallback
 import com.anyer.hdp.R
-import com.anyer.hdp.models.Device
+
+val DevicesFragment.gattCallback: BluetoothGattCallback
+    get() = object : BluetoothGattCallback() {
+        override fun onConnectionStateChange(gatt: BluetoothGatt?, status: Int, newState: Int) {
+            if (gatt == null) return
+
+            if (newState == BluetoothGatt.STATE_CONNECTED) {
+                gatt.requestMtu(256)
+                gatt.discoverServices()
+            }
+        }
+
+        override fun onServicesDiscovered(gatt: BluetoothGatt?, status: Int) {
+            if (gatt == null) return
+            val characteristic = gatt.getService(Bluetooth.HEART_RATE_SERVICE)
+                ?.getCharacteristic(Bluetooth.HEART_RATE_MEASUREMENT_CHARACTERISTIC) ?: return
+
+            gatt.readCharacteristic(characteristic)
+            gatt.setCharacteristicNotification(characteristic, true)
+            gatt.writeCharacteristic(characteristic)
+
+            activity?.runOnUiThread {
+                Toast.makeText(context, "Subscribed to Heart Rate Service", Toast.LENGTH_SHORT).show()
+            }
+        }
+
+        override fun onCharacteristicChanged(
+            gatt: BluetoothGatt?, characteristic: BluetoothGattCharacteristic?
+        ) {
+            if (characteristic == null) return
+
+            val heartRateMeasurement = characteristic.getIntValue(FORMAT_UINT8, 1)
+
+            activity?.runOnUiThread {
+                Toast.makeText(context, "Heart Rate $heartRateMeasurement bpm", Toast.LENGTH_SHORT).show()
+            }
+        }
+    }
 
 val DevicesFragment.bluetoothScanCallback: BluetoothScanCallback
     get() = object : BluetoothScanCallback() {
-        val devices = mutableListOf<Device>()
+        val devices = mutableListOf<BluetoothDevice>()
 
         override fun onScanResult(callbackType: Int, result: ScanResult?) {
             if (result == null) return
@@ -28,7 +72,7 @@ val DevicesFragment.bluetoothScanCallback: BluetoothScanCallback
         }
 
         fun devicesFound(results: List<BluetoothDevice>) {
-            devices.addAll(results.map { Device(it.name) })
+            devices.addAll(results)
             devicesAdapter.submitList(devices)
 
             stopScan()
