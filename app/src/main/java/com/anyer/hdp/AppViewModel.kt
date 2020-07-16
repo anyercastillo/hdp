@@ -1,11 +1,8 @@
 package com.anyer.hdp
 
-import android.app.Application
-import android.content.Context
-import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
+import androidx.lifecycle.ViewModel
 import com.anyer.hdp.bluetooth.Bluetooth
-import com.anyer.hdp.db.AppRoomDatabase
 import com.anyer.hdp.models.BleDevice
 import com.anyer.hdp.repository.AppRepository
 import kotlinx.coroutines.CoroutineScope
@@ -14,33 +11,22 @@ import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 
 
-class AppViewModel(application: Application) : AndroidViewModel(application) {
-    private val repository: AppRepository
-    private var bluetooth: Bluetooth? = null
-
-    init {
-        val devicesDao = AppRoomDatabase.getDatabase(application).devicesDao()
-        repository = AppRepository(devicesDao)
-    }
+class AppViewModel(private val repository: AppRepository, private val bluetooth: Bluetooth) :
+    ViewModel() {
+    val scanProgress: LiveData<Int> = bluetooth.scanProgress()
 
     fun allDevices(): LiveData<List<BleDevice>> {
         return repository.allDevices()
     }
 
-    fun startScanDevices(context: Context) = CoroutineScope(Dispatchers.IO).launch {
-        if (bluetooth == null) {
-            bluetooth = Bluetooth(context)
-        }
-
-        bluetooth?.let {
-            val flow = it.startScanDevices()
-            flow.collect { devices ->
-                repository.updateDevices(devices)
-            }
+    fun startScanDevices() = CoroutineScope(Dispatchers.IO).launch {
+        val flow = bluetooth.startScanDevices()
+        flow.collect { devices ->
+            repository.updateDevices(devices)
         }
     }
 
     fun stopScanDevices() = CoroutineScope(Dispatchers.IO).launch {
-        bluetooth?.stopScanDevices()
+        bluetooth.stopScanDevices()
     }
 }

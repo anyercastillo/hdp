@@ -23,7 +23,8 @@ class DevicesFragment : Fragment() {
     private lateinit var binding: FragmentDevicesBluetoothBinding
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
+        inflater: LayoutInflater,
+        container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
         // Inflate the layout for this fragment
@@ -42,13 +43,29 @@ class DevicesFragment : Fragment() {
         loadAllDevices()
 
         setupScanSwitch()
+
+        setupScanProgress()
+    }
+
+    private fun setupScanProgress() {
+        val max = 15
+        binding.progressBar.max = max
+        viewModel.scanProgress.observe(viewLifecycleOwner, Observer {
+            binding.scanProgress = it
+
+            if (it >= max) {
+                binding.scan.isChecked = false
+                binding.scanProgress = -1
+                viewModel.stopScanDevices()
+            }
+        })
     }
 
     private fun setupScanSwitch() {
         binding.scan.isChecked = false
-        binding.scan.setOnCheckedChangeListener { buttonView, isChecked ->
+        binding.scan.setOnCheckedChangeListener { _, isChecked ->
             if (isChecked) {
-                viewModel.startScanDevices(requireContext())
+                viewModel.startScanDevices()
             } else {
                 viewModel.stopScanDevices()
             }

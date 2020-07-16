@@ -14,18 +14,22 @@ val DevicesFragment.gattCallback: BluetoothGattCallback
 
             if (newState == BluetoothGatt.STATE_CONNECTED) {
                 gatt.requestMtu(256)
-                gatt.discoverServices()
             }
+        }
+
+        override fun onMtuChanged(gatt: BluetoothGatt?, mtu: Int, status: Int) {
+            gatt?.discoverServices()
         }
 
         override fun onServicesDiscovered(gatt: BluetoothGatt?, status: Int) {
             if (gatt == null) return
+
             val characteristic = gatt.getService(Bluetooth.HEART_RATE_SERVICE)
                 ?.getCharacteristic(Bluetooth.HEART_RATE_MEASUREMENT_CHARACTERISTIC) ?: return
 
             gatt.readCharacteristic(characteristic)
             gatt.setCharacteristicNotification(characteristic, true)
-            gatt.writeCharacteristic(characteristic)
+
 
             activity?.runOnUiThread {
                 Toast.makeText(context, "Subscribed to Heart Rate Service", Toast.LENGTH_SHORT)

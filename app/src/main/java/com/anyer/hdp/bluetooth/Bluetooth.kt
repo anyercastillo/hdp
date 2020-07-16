@@ -6,6 +6,7 @@ import android.bluetooth.BluetoothDevice
 import android.bluetooth.le.*
 import android.content.Context
 import android.os.ParcelUuid
+import androidx.lifecycle.liveData
 import com.anyer.hdp.models.BleDevice
 import com.livinglifetechway.quickpermissions_kotlin.runWithPermissions
 import kotlinx.coroutines.delay
@@ -75,6 +76,22 @@ class Bluetooth(private val context: Context) {
             Manifest.permission.ACCESS_FINE_LOCATION
         ) {
             leScanner.stopScan(scanCallback)
+        }
+    }
+
+    fun scanProgress() = liveData {
+        var progress = 0
+
+        while (true) {
+            if (scanning) {
+                progress++
+            } else {
+                progress = 0
+            }
+
+            emit(progress)
+
+            delay(1000L)
         }
     }
 
