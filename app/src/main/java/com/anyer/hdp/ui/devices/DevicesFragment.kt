@@ -1,5 +1,6 @@
 package com.anyer.hdp.ui.devices
 
+import android.bluetooth.BluetoothAdapter
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -15,8 +16,9 @@ import com.anyer.hdp.ui.MainActivity
  * A simple [Fragment] subclass.
  */
 class DevicesFragment : Fragment() {
-    val devicesAdapter = DevicesAdapter { device ->
-        //device.connectGatt(context, false, gattCallback)
+    private val devicesAdapter = DevicesAdapter { device ->
+        BluetoothAdapter.getDefaultAdapter().getRemoteDevice(device.address)
+            .connectGatt(context, false, gattCallback)
     }
 
     private lateinit var binding: FragmentDevicesBluetoothBinding
@@ -36,15 +38,12 @@ class DevicesFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-//        context?.let {
-//            Bluetooth()
-//                .scanForDevices(it, bluetoothScanCallback)
-//        }
-
-        (activity as MainActivity).appViewModel.allDevices.observe(
-            viewLifecycleOwner,
-            Observer { devices ->
-                devicesAdapter.submitList(devices)
-            })
+        context?.let {
+            (activity as MainActivity).appViewModel.allDevices(it).observe(
+                viewLifecycleOwner,
+                Observer { devices ->
+                    devicesAdapter.submitList(devices)
+                })
+        }
     }
 }
