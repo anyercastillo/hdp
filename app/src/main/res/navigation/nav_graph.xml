@@ -6,7 +6,7 @@
     app:startDestination="@id/setupBluetooth">
     <fragment
         android:id="@+id/setupBluetooth"
-        android:name="com.anyer.hdp.ui.DevicesFragment"
+        android:name="com.anyer.hdp.ui.devices.DevicesFragment"
         android:label="fragment_setup_bluetooth"
         tools:layout="@layout/fragment_devices_bluetooth" >
         <action

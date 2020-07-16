@@ -1,4 +1,4 @@
-package com.anyer.hdp.ui
+package com.anyer.hdp.ui.devices
 
 import android.bluetooth.BluetoothDevice
 import android.view.View

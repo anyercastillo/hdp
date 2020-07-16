@@ -1,4 +1,4 @@
-package com.anyer.hdp.ui
+package com.anyer.hdp.ui.devices
 
 import android.bluetooth.BluetoothDevice
 import android.bluetooth.BluetoothGatt
@@ -6,7 +6,6 @@ import android.bluetooth.BluetoothGattCallback
 import android.bluetooth.BluetoothGattCharacteristic
 import android.bluetooth.BluetoothGattCharacteristic.FORMAT_UINT8
 import android.bluetooth.le.ScanResult
-import android.util.Log
 import android.widget.Toast
 import androidx.navigation.fragment.findNavController
 import com.anyer.hdp.Bluetooth
