@@ -16,11 +16,10 @@ import com.anyer.hdp.ui.MainActivity
  * A simple [Fragment] subclass.
  */
 class DevicesFragment : Fragment() {
-    private val devicesAdapter = DevicesAdapter { device ->
-        BluetoothAdapter.getDefaultAdapter().getRemoteDevice(device.address)
-            .connectGatt(context, false, gattCallback)
+    private val devicesAdapter = DevicesAdapter()
+    private val viewModel by lazy {
+        (activity as MainActivity).appViewModel
     }
-
     private lateinit var binding: FragmentDevicesBluetoothBinding
 
     override fun onCreateView(
@@ -29,8 +28,6 @@ class DevicesFragment : Fragment() {
     ): View? {
         // Inflate the layout for this fragment
         binding = FragmentDevicesBluetoothBinding.inflate(inflater, container, false)
-        binding.recyclerViewDevices.layoutManager = LinearLayoutManager(context)
-        binding.recyclerViewDevices.adapter = devicesAdapter
 
         return binding.root
     }
@@ -38,12 +35,41 @@ class DevicesFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        context?.let {
-            (activity as MainActivity).appViewModel.allDevices(it).observe(
-                viewLifecycleOwner,
-                Observer { devices ->
-                    devicesAdapter.submitList(devices)
-                })
+        setupRecyclerView()
+
+        setupDeviceAdapter()
+
+        loadAllDevices()
+
+        setupScanSwitch()
+    }
+
+    private fun setupScanSwitch() {
+        binding.scan.isChecked = false
+        binding.scan.setOnCheckedChangeListener { buttonView, isChecked ->
+            if (isChecked) {
+                viewModel.startScanDevices(requireContext())
+            } else {
+                viewModel.stopScanDevices()
+            }
         }
+    }
+
+    private fun setupRecyclerView() {
+        binding.recyclerViewDevices.layoutManager = LinearLayoutManager(context)
+        binding.recyclerViewDevices.adapter = devicesAdapter
+    }
+
+    private fun setupDeviceAdapter() {
+        devicesAdapter.onDeviceClicked { device ->
+            BluetoothAdapter.getDefaultAdapter().getRemoteDevice(device.address)
+                .connectGatt(context, false, gattCallback)
+        }
+    }
+
+    private fun loadAllDevices() {
+        viewModel.allDevices().observe(viewLifecycleOwner, Observer { devices ->
+            devicesAdapter.submitList(devices)
+        })
     }
 }
