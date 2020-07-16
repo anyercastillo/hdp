@@ -7,6 +7,9 @@ The main goal of this project is to interface with **Bluetooth Heart Rate Servic
 - Navigation https://developer.android.com/guide/navigation/
 - RecyclerView with ListAdapter for a better performance
 - Material Design
+- Room
+- ViewModel
+- LiveData
 
 # Things learnt
 - BluetoothHealth was deprecated in API level 29. 

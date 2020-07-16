@@ -1,4 +1,4 @@
-package com.anyer.hdp
+package com.anyer.hdp.bluetooth
 
 import android.Manifest
 import android.bluetooth.BluetoothAdapter

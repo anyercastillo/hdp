@@ -5,9 +5,10 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.anyer.hdp.Bluetooth
 import com.anyer.hdp.databinding.FragmentDevicesBluetoothBinding
+import com.anyer.hdp.ui.MainActivity
 
 
 /**
@@ -15,7 +16,7 @@ import com.anyer.hdp.databinding.FragmentDevicesBluetoothBinding
  */
 class DevicesFragment : Fragment() {
     val devicesAdapter = DevicesAdapter { device ->
-        device.connectGatt(context, false, gattCallback)
+        //device.connectGatt(context, false, gattCallback)
     }
 
     private lateinit var binding: FragmentDevicesBluetoothBinding
@@ -35,8 +36,15 @@ class DevicesFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        context?.let {
-            Bluetooth().scanForDevices(it, bluetoothScanCallback)
-        }
+//        context?.let {
+//            Bluetooth()
+//                .scanForDevices(it, bluetoothScanCallback)
+//        }
+
+        (activity as MainActivity).appViewModel.allDevices.observe(
+            viewLifecycleOwner,
+            Observer { devices ->
+                devicesAdapter.submitList(devices)
+            })
     }
 }

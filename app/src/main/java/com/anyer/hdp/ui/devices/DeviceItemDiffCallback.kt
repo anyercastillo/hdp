@@ -1,13 +1,12 @@
 package com.anyer.hdp.ui.devices
 
-import android.bluetooth.BluetoothDevice
 import androidx.recyclerview.widget.DiffUtil
+import com.anyer.hdp.models.BleDevice
 
-class DeviceItemDiffCallback : DiffUtil.ItemCallback<BluetoothDevice>() {
-    override fun areItemsTheSame(oldItem: BluetoothDevice, newItem: BluetoothDevice): Boolean =
+class DeviceItemDiffCallback : DiffUtil.ItemCallback<BleDevice>() {
+    override fun areItemsTheSame(oldItem: BleDevice, newItem: BleDevice): Boolean =
         oldItem == newItem
 
-    override fun areContentsTheSame(oldItem: BluetoothDevice, newItem: BluetoothDevice): Boolean =
+    override fun areContentsTheSame(oldItem: BleDevice, newItem: BleDevice): Boolean =
         oldItem == newItem
-
 }
