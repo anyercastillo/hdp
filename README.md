@@ -23,9 +23,9 @@ https://play.google.com/store/apps/details?id=io.github.webbluetoothcg.bletestpe
 https://www.bluetooth.com/xml-viewer/?src=https://www.bluetooth.com/wp-content/uploads/Sitecore-Media-Library/Gatt/Xml/Characteristics/org.bluetooth.characteristic.heart_rate_measurement.xml#tree0:0,6,1|0,7;
 
 ## How to test it.
-1. Enable Bluetooth
+1. Enable Bluetooth.
 2. Launch the app.
 3. Scan for new devices broadcasting heart rate.
-4. Each devices listed will auto-refresh if the data change.
+4. Each device listed will auto-refresh if the data change.
 5. Trigger a "heart rate" from the BLE device or change the "body sensor location" value.
 
