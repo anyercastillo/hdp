@@ -16,6 +16,7 @@ import java.util.*
 class Bluetooth(private val context: Context) {
     private var scanning = false
     private val adapter = BluetoothAdapter.getDefaultAdapter()
+    private val connectedGatt = mutableSetOf<String>()
 
     companion object {
         val HEART_RATE_SERVICE = UUID.fromString("0000180D-0000-1000-8000-00805F9B34FB")
@@ -61,8 +62,13 @@ class Bluetooth(private val context: Context) {
     }
 
     fun connectGatt(address: String, heartRateGattCallback: HeartRateGattCallback) {
-        adapter.getRemoteDevice(address)
+        if (connectedGatt.contains(address)) return
+
+        adapter
+            .getRemoteDevice(address)
             .connectGatt(context, false, heartRateGattCallback)
+
+        connectedGatt.add(address)
     }
 
     private fun stopScan(

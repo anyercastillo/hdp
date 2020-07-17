@@ -4,10 +4,14 @@ import android.bluetooth.BluetoothGatt
 import android.bluetooth.BluetoothGattCallback
 import android.bluetooth.BluetoothGattCharacteristic
 import android.bluetooth.BluetoothGattCharacteristic.FORMAT_UINT8
-import kotlinx.coroutines.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.isActive
+import kotlinx.coroutines.launch
 import java.util.*
 
 class HeartRateGattCallback(
+    private val scope: CoroutineScope,
     private val onChange: (characteristic: UUID, value: Int) -> Unit
 ) : BluetoothGattCallback() {
     override fun onConnectionStateChange(gatt: BluetoothGatt?, status: Int, newState: Int) {
@@ -26,7 +30,6 @@ class HeartRateGattCallback(
         if (gatt == null) return
 
         subscribeToMeasureCharacteristic(gatt)
-        readCharacteristic(gatt, Bluetooth.HEART_RATE_MEASUREMENT_CHARACTERISTIC)
         readCharacteristic(gatt, Bluetooth.HEART_RATE_BODY_SENSOR_LOCATION_CHARACTERISTIC)
     }
 
@@ -54,11 +57,6 @@ class HeartRateGattCallback(
         if (characteristic == null) return
 
         when (characteristic.uuid) {
-            Bluetooth.HEART_RATE_MEASUREMENT_CHARACTERISTIC -> {
-                val heartRateMeasurement = characteristic.getIntValue(FORMAT_UINT8, 1)
-                onChange(characteristic.uuid, heartRateMeasurement)
-            }
-
             Bluetooth.HEART_RATE_BODY_SENSOR_LOCATION_CHARACTERISTIC -> {
                 val bodySensorLocation = characteristic.getIntValue(FORMAT_UINT8, 0)
                 onChange(characteristic.uuid, bodySensorLocation)
@@ -66,10 +64,10 @@ class HeartRateGattCallback(
         }
     }
 
-    private fun readCharacteristic(gatt: BluetoothGatt, uuid: UUID) = CoroutineScope(Dispatchers.IO).launch{
+    private fun readCharacteristic(gatt: BluetoothGatt, uuid: UUID) = scope.launch {
         val characteristic = gatt.getService(Bluetooth.HEART_RATE_SERVICE)?.getCharacteristic(uuid)
 
-        while (isActive) {
+        while (scope.isActive) {
             gatt.readCharacteristic(characteristic)
             delay(1000L)
         }

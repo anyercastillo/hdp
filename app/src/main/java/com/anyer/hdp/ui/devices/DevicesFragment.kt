@@ -72,11 +72,16 @@ class DevicesFragment : Fragment() {
     private fun setupRecyclerView() {
         binding.recyclerViewDevices.layoutManager = LinearLayoutManager(context)
         binding.recyclerViewDevices.adapter = devicesAdapter
+
     }
 
     private fun loadAllDevices() {
         viewModel.allDevices().observe(viewLifecycleOwner, Observer { devices ->
             devicesAdapter.submitList(devices)
+
+            devices.forEach { device ->
+                viewModel.connectGatt(device.address)
+            }
         })
     }
 }

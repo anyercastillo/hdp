@@ -11,12 +11,6 @@ import kotlinx.coroutines.launch
 class BleScanCallback(
     private val onDevicesFound: (devices: List<BleDevice>) -> Unit
 ) : ScanCallback() {
-    private val bleDevices = mutableSetOf<String>()
-
-    fun restart() {
-        bleDevices.clear()
-    }
-
     override fun onScanResult(callbackType: Int, result: ScanResult?) {
         if (result == null) return
 
@@ -33,8 +27,7 @@ class BleScanCallback(
         CoroutineScope(Dispatchers.IO).launch {
             val devices = results.map { scanResult -> bluetoothDeviceToModel(scanResult.device) }
 
-            onDevicesFound(devices.filter { !bleDevices.contains(it.name) })
-            bleDevices.addAll(devices.map { it.name })
+            onDevicesFound(devices)
         }
     }
 

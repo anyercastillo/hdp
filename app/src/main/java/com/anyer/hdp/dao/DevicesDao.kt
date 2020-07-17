@@ -14,7 +14,7 @@ interface DevicesDao {
     fun removeDevices()
 
     @Transaction
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
     fun insertDevices(devices: List<Device>)
 
     @Query("UPDATE devices SET heartRate=:value WHERE address=:address")
