@@ -1,3 +1,3 @@
 package com.anyer.hdp.models
 
-data class BleDevice(val address: String, val name: String)
+data class BleDevice(val address: String, val name: String, val heartRate: Int)

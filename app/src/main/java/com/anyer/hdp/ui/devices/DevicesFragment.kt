@@ -1,6 +1,5 @@
 package com.anyer.hdp.ui.devices
 
-import android.bluetooth.BluetoothAdapter
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -38,8 +37,6 @@ class DevicesFragment : Fragment() {
 
         setupRecyclerView()
 
-        setupDeviceAdapter()
-
         loadAllDevices()
 
         setupScanSwitch()
@@ -75,13 +72,6 @@ class DevicesFragment : Fragment() {
     private fun setupRecyclerView() {
         binding.recyclerViewDevices.layoutManager = LinearLayoutManager(context)
         binding.recyclerViewDevices.adapter = devicesAdapter
-    }
-
-    private fun setupDeviceAdapter() {
-        devicesAdapter.onDeviceClicked { device ->
-            BluetoothAdapter.getDefaultAdapter().getRemoteDevice(device.address)
-                .connectGatt(context, false, gattCallback)
-        }
     }
 
     private fun loadAllDevices() {

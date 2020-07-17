@@ -7,9 +7,6 @@ import com.anyer.hdp.R
 import com.anyer.hdp.models.BleDevice
 
 class DevicesAdapter : ListAdapter<BleDevice, DeviceViewHolder>(DeviceItemDiffCallback()) {
-    var deviceClickedCallback: (device: BleDevice) -> Unit = {}
-        private set
-
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): DeviceViewHolder {
         return DeviceViewHolder(
             LayoutInflater
@@ -19,10 +16,6 @@ class DevicesAdapter : ListAdapter<BleDevice, DeviceViewHolder>(DeviceItemDiffCa
     }
 
     override fun onBindViewHolder(holder: DeviceViewHolder, position: Int) {
-        holder.bindTo(getItem(position), deviceClickedCallback)
-    }
-
-    fun onDeviceClicked(callback: (device: BleDevice) -> Unit) {
-        deviceClickedCallback = callback
+        holder.bindTo(getItem(position))
     }
 }

@@ -8,5 +8,5 @@ class DeviceItemDiffCallback : DiffUtil.ItemCallback<BleDevice>() {
         oldItem == newItem
 
     override fun areContentsTheSame(oldItem: BleDevice, newItem: BleDevice): Boolean =
-        oldItem == newItem
+        oldItem.name == newItem.name && oldItem.heartRate == newItem.heartRate
 }
