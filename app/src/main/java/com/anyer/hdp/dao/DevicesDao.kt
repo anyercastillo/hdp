@@ -19,4 +19,7 @@ interface DevicesDao {
 
     @Query("UPDATE devices SET heartRate=:value WHERE address=:address")
     fun updateHeartRate(address: String, value: Int)
+
+    @Query("UPDATE devices SET bodySensorLocation=:value WHERE address=:address")
+    fun updateBodySensorLocation(address: String, value: Int)
 }

@@ -31,10 +31,19 @@ class AppViewModel(private val repository: AppRepository, private val bluetooth:
         bluetooth.stopScanDevices(bleScanCallback)
     }
 
-    private fun getHeartRate(address: String) {
-        bluetooth.getHeartRate(address, HeartRateGattCallback { value ->
-            Log.e("TAG", "getHeartRate: $address $value")
-            repository.updateHeartRate(address, value)
+    private fun connectGatt(address: String) {
+        bluetooth.connectGatt(address, HeartRateGattCallback { characteristic, value ->
+            Log.e("TAG", "connectGatt: $value" )
+
+            when (characteristic) {
+                Bluetooth.HEART_RATE_MEASUREMENT_CHARACTERISTIC -> {
+                    repository.updateHeartRate(address, value)
+                }
+
+                Bluetooth.HEART_RATE_BODY_SENSOR_LOCATION_CHARACTERISTIC -> {
+                    repository.updateBodySensorLocation(address, value)
+                }
+            }
         })
     }
 
@@ -42,7 +51,7 @@ class AppViewModel(private val repository: AppRepository, private val bluetooth:
         repository.updateDevices(devices.toSet())
 
         devices.forEach { device ->
-            getHeartRate(device.address)
+            connectGatt(device.address)
         }
     }
 }

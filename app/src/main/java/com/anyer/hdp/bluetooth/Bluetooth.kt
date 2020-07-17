@@ -21,6 +21,8 @@ class Bluetooth(private val context: Context) {
         val HEART_RATE_SERVICE = UUID.fromString("0000180D-0000-1000-8000-00805F9B34FB")
         val HEART_RATE_MEASUREMENT_CHARACTERISTIC =
             UUID.fromString("00002A37-0000-1000-8000-00805F9B34FB")
+        val HEART_RATE_BODY_SENSOR_LOCATION_CHARACTERISTIC =
+            UUID.fromString("00002A38-0000-1000-8000-00805F9B34FB")
     }
 
     fun startScanDevices(bleScanCallback: BleScanCallback) {
@@ -58,7 +60,7 @@ class Bluetooth(private val context: Context) {
         }
     }
 
-    fun getHeartRate(address: String, heartRateGattCallback: HeartRateGattCallback) {
+    fun connectGatt(address: String, heartRateGattCallback: HeartRateGattCallback) {
         adapter.getRemoteDevice(address)
             .connectGatt(context, false, heartRateGattCallback)
     }

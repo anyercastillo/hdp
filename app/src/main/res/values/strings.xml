@@ -6,4 +6,5 @@
     <string name="disabled_bluetooth">Please check if Bluetooth is enabled \nand restart the app.</string>
     <string name="scan">Scan</string>
     <string name="heart_rate">Heart Rate</string>
+    <string name="body_sensor_location">Body Sensor Location</string>
 </resources>

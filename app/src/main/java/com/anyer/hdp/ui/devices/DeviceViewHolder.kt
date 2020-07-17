@@ -12,5 +12,6 @@ class DeviceViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         itemView.heartRate.text = device.heartRate.toString()
         itemView.heartRate.visibility = if (device.heartRate != 0) View.VISIBLE else View.GONE
         itemView.imageView.setColorFilter(if (device.heartRate != 0) Color.RED else Color.GRAY)
+        itemView.bodySensorLocation.text = device.bodySensorLocationString
     }
 }

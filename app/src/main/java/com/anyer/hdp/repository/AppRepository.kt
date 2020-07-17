@@ -15,7 +15,7 @@ class AppRepository(private val devicesDao: DevicesDao) {
                 .getDevices()
                 .map { devices ->
                     devices.map { device ->
-                        BleDevice(device.address, device.name, device.heartRate)
+                        BleDevice(device.address, device.name, device.heartRate, device.bodySensorLocation)
                     }
                 }
         )
@@ -30,12 +30,17 @@ class AppRepository(private val devicesDao: DevicesDao) {
             Device(
                 device.address,
                 device.name,
-                device.heartRate
+                device.heartRate,
+                device.bodySensorLocation
             )
         })
     }
 
     fun updateHeartRate(address: String, value: Int) {
         devicesDao.updateHeartRate(address, value)
+    }
+
+    fun updateBodySensorLocation(address: String, value: Int) {
+        devicesDao.updateBodySensorLocation(address, value)
     }
 }
