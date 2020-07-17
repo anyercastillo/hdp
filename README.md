@@ -24,7 +24,8 @@ https://www.bluetooth.com/xml-viewer/?src=https://www.bluetooth.com/wp-content/u
 
 ## How to test it.
 1. Enable Bluetooth
-2. Select one of the available BLE connection in the "Devices" screen.
-*Note* The item is successfully selected only if you see a toast to confirm it.
-3. Trigger a "heart rate" from the BLE device. 
-*Note* The app should render a toast with the heart rate value
+2. Launch the app.
+3. Scan for new devices broadcasting heart rate.
+4. Each devices listed will auto-refresh if the data change.
+5. Trigger a "heart rate" from the BLE device or change the "body sensor location" value.
+
