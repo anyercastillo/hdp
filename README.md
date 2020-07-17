@@ -10,6 +10,7 @@ The main goal of this project is to interface with **Bluetooth Heart Rate Servic
 - Room
 - ViewModel
 - LiveData
+- Coroutines
 
 # Things learnt
 - BluetoothHealth was deprecated in API level 29. 
