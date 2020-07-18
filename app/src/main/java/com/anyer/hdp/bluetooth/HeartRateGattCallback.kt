@@ -4,21 +4,14 @@ import android.bluetooth.BluetoothGatt
 import android.bluetooth.BluetoothGattCallback
 import android.bluetooth.BluetoothGattCharacteristic
 import android.bluetooth.BluetoothGattCharacteristic.FORMAT_UINT8
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.isActive
-import kotlinx.coroutines.launch
 import java.util.*
 
 class HeartRateGattCallback(
-    private val scope: CoroutineScope,
-    private val onChange: (characteristic: UUID, value: Int) -> Unit
+    private val onValueChanged: (characteristic: UUID, value: Int) -> Unit
 ) : BluetoothGattCallback() {
     override fun onConnectionStateChange(gatt: BluetoothGatt?, status: Int, newState: Int) {
-        if (gatt == null) return
-
         if (newState == BluetoothGatt.STATE_CONNECTED) {
-            gatt.requestMtu(256)
+            gatt?.requestMtu(256)
         }
     }
 
@@ -27,8 +20,6 @@ class HeartRateGattCallback(
     }
 
     override fun onServicesDiscovered(gatt: BluetoothGatt?, status: Int) {
-        if (gatt == null) return
-
         subscribeToMeasureCharacteristic(gatt)
         readCharacteristic(gatt, HEART_RATE_BODY_SENSOR_LOCATION_CHARACTERISTIC)
     }
@@ -37,13 +28,10 @@ class HeartRateGattCallback(
         gatt: BluetoothGatt?,
         characteristic: BluetoothGattCharacteristic?
     ) {
-        if (gatt == null) return
-        if (characteristic == null) return
-
-        when (characteristic.uuid) {
+        when (characteristic?.uuid) {
             HEART_RATE_MEASUREMENT_CHARACTERISTIC -> {
                 val heartRateMeasurement = characteristic.getIntValue(FORMAT_UINT8, 1)
-                onChange(characteristic.uuid, heartRateMeasurement)
+                onValueChanged(characteristic.uuid, heartRateMeasurement)
             }
         }
     }
@@ -53,30 +41,24 @@ class HeartRateGattCallback(
         characteristic: BluetoothGattCharacteristic?,
         status: Int
     ) {
-        if (gatt == null) return
-        if (characteristic == null) return
-
-        when (characteristic.uuid) {
+        when (characteristic?.uuid) {
             HEART_RATE_BODY_SENSOR_LOCATION_CHARACTERISTIC -> {
                 val bodySensorLocation = characteristic.getIntValue(FORMAT_UINT8, 0)
-                onChange(characteristic.uuid, bodySensorLocation)
+                onValueChanged(characteristic.uuid, bodySensorLocation)
             }
         }
     }
 
-    private fun readCharacteristic(gatt: BluetoothGatt, uuid: UUID) = scope.launch {
-        val characteristic = gatt.getService(HEART_RATE_SERVICE)?.getCharacteristic(uuid)
-
-        while (scope.isActive) {
-            gatt.readCharacteristic(characteristic)
-            delay(1000L)
-        }
+    private fun readCharacteristic(gatt: BluetoothGatt?, uuid: UUID) {
+        val characteristic = gatt?.getService(HEART_RATE_SERVICE)?.getCharacteristic(uuid)
+        gatt?.readCharacteristic(characteristic)
     }
 
-    private fun subscribeToMeasureCharacteristic(gatt: BluetoothGatt) {
-        val characteristic = gatt.getService(HEART_RATE_SERVICE)
-            ?.getCharacteristic(HEART_RATE_MEASUREMENT_CHARACTERISTIC) ?: return
+    private fun subscribeToMeasureCharacteristic(gatt: BluetoothGatt?) {
+        val service = gatt?.getService(HEART_RATE_SERVICE)
+        val characteristic = service
+            ?.getCharacteristic(HEART_RATE_MEASUREMENT_CHARACTERISTIC)
 
-        gatt.setCharacteristicNotification(characteristic, true)
+        gatt?.setCharacteristicNotification(characteristic, true)
     }
 }

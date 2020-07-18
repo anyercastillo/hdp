@@ -8,7 +8,9 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.anyer.hdp.bluetooth.*
 import com.anyer.hdp.databinding.FragmentDevicesBluetoothBinding
+import java.util.*
 
 
 /**
@@ -20,6 +22,30 @@ class DevicesFragment : Fragment() {
     }
     private val devicesAdapter = DevicesAdapter()
     private lateinit var binding: FragmentDevicesBluetoothBinding
+
+    private val bleScanCallback = BleScanCallback { devices ->
+        viewModel.onBluetoothScanChanged(devices)
+    }
+
+    private val connectionManager by lazy {
+        ConnectionManager(requireContext(), object : HeartRateGattCallbackFactory {
+            override fun create(address: String): HeartRateGattCallback {
+                val onValueChanged = { characteristic: UUID, value: Int ->
+                    when (characteristic) {
+                        HEART_RATE_MEASUREMENT_CHARACTERISTIC -> {
+                            viewModel.updateHeartRate(address, value)
+                        }
+
+                        HEART_RATE_BODY_SENSOR_LOCATION_CHARACTERISTIC -> {
+                            viewModel.updateBodySensorLocation(address, value)
+                        }
+                    }
+                }
+
+                return HeartRateGattCallback(onValueChanged)
+            }
+        })
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -36,9 +62,14 @@ class DevicesFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        viewLifecycleOwner.lifecycle.addObserver(connectionManager)
+
         setupRecyclerView()
         setupScanSwitch()
-        loadAllDevices()
+
+        observeDevices()
+        observeScanning()
+        observeConnectAddresses()
     }
 
     private fun setupScanSwitch() {
@@ -52,13 +83,25 @@ class DevicesFragment : Fragment() {
         binding.recyclerViewDevices.adapter = devicesAdapter
     }
 
-    private fun loadAllDevices() {
-        viewModel.allDevices().observe(viewLifecycleOwner, Observer { devices ->
-            devicesAdapter.submitList(devices)
+    private fun observeDevices() {
+        viewModel.devices.observe(viewLifecycleOwner, Observer {
+            devicesAdapter.submitList(it)
+        })
+    }
 
-            devices.forEach { device ->
-                viewModel.connectGatt(device.address)
+    private fun observeScanning() {
+        viewModel.scanning.observe(viewLifecycleOwner, Observer { scanning ->
+            if (scanning) {
+                bluetoothStartScanDevices(requireContext(), bleScanCallback)
+            } else {
+                bluetoothStopScanDevices(requireContext(), bleScanCallback)
             }
+        })
+    }
+
+    private fun observeConnectAddresses() {
+        viewModel.connectAddresses.observe(viewLifecycleOwner, Observer { addresses ->
+            connectionManager.updateConnections(addresses)
         })
     }
 }

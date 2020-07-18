@@ -4,7 +4,8 @@ data class BleDevice(
     val address: String,
     val name: String,
     val heartRate: Int,
-    val bodySensorLocation: Int
+    val bodySensorLocation: Int,
+    val connected: Boolean
 ) {
     val bodySensorLocationString: String
         get() = when (bodySensorLocation) {

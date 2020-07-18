@@ -32,5 +32,5 @@ class BleScanCallback(
     }
 
     private fun bluetoothDeviceToModel(device: BluetoothDevice) =
-        BleDevice(device.address, device.name, 0, 0)
+        BleDevice(device.address, device.name, 0, 0, false)
 }

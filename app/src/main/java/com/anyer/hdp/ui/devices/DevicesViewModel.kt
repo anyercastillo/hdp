@@ -2,10 +2,9 @@ package com.anyer.hdp.ui.devices
 
 import android.os.CountDownTimer
 import androidx.lifecycle.LiveData
+import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
-import com.anyer.hdp.bluetooth.*
 import com.anyer.hdp.models.BleDevice
 import com.anyer.hdp.repository.AppRepository
 import kotlinx.coroutines.CoroutineScope
@@ -14,8 +13,7 @@ import kotlinx.coroutines.launch
 
 
 class DevicesViewModel(
-    private val repository: AppRepository,
-    private val bluetooth: Bluetooth
+    private val repository: AppRepository
 ) : ViewModel() {
     private val _scanning = MutableLiveData<Boolean>()
     val scanning: LiveData<Boolean> = _scanning
@@ -23,7 +21,7 @@ class DevicesViewModel(
     private val _scanProgress = MutableLiveData<Int>()
     val scanProgress: LiveData<Int> = _scanProgress
 
-    val scanProgressMax = 3 // seconds
+    val scanProgressMax = 12 // seconds
 
     private val scanProgressCounter: CountDownTimer =
         object : CountDownTimer(scanProgressMax * 1000L, 100L) {
@@ -38,24 +36,19 @@ class DevicesViewModel(
             }
         }
 
-    fun allDevices(): LiveData<List<BleDevice>> {
-        return repository.allDevices()
-    }
+    val devices: LiveData<List<BleDevice>> = repository.allDevices()
 
-    fun connectGatt(address: String) {
-        bluetooth.connectGatt(
-            address,
-            HeartRateGattCallback(viewModelScope) { characteristic, value ->
-                when (characteristic) {
-                    HEART_RATE_MEASUREMENT_CHARACTERISTIC -> {
-                        repository.updateHeartRate(address, value)
-                    }
+    private val _connectAddresses = MediatorLiveData<List<String>>()
+    val connectAddresses: LiveData<List<String>> = _connectAddresses
 
-                    HEART_RATE_BODY_SENSOR_LOCATION_CHARACTERISTIC -> {
-                        repository.updateBodySensorLocation(address, value)
-                    }
-                }
-            })
+    init {
+        _connectAddresses.addSource(devices) {
+            computeConnectAddresses()
+        }
+
+        _connectAddresses.addSource(scanning) {
+            computeConnectAddresses()
+        }
     }
 
     fun onSwitchChanged(isChecked: Boolean) {
@@ -66,19 +59,31 @@ class DevicesViewModel(
         }
     }
 
+    fun onBluetoothScanChanged(devices: List<BleDevice>) {
+        repository.updateDevices(devices.toSet())
+    }
+
+    fun updateHeartRate(address: String, value: Int) {
+        repository.updateHeartRate(address, value)
+    }
+
+    fun updateBodySensorLocation(address: String, value: Int) {
+        repository.updateBodySensorLocation(address, value)
+    }
+
     private fun startScanDevices() = CoroutineScope(Dispatchers.IO).launch {
         _scanning.postValue(true)
         scanProgressCounter.start()
-        bluetooth.startScanDevices(bleScanCallback)
     }
 
     private fun stopScanDevices() = CoroutineScope(Dispatchers.IO).launch {
         _scanning.postValue(false)
         scanProgressCounter.cancel()
-        bluetooth.stopScanDevices(bleScanCallback)
     }
 
-    private val bleScanCallback = BleScanCallback { devices ->
-        repository.updateDevices(devices.toSet())
+    private fun computeConnectAddresses() {
+        if (scanning.value != true) {
+            _connectAddresses.value = devices.value?.map { device -> device.address }
+        }
     }
 }

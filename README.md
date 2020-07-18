@@ -2,7 +2,7 @@
 The main goal of this project is to interface with **Bluetooth Heart Rate Service.** 
 
 
-# Technologies:
+# Watch for:
 - Bluetooth Gatt https://developer.android.com/reference/android/bluetooth/BluetoothGatt 
 - Navigation https://developer.android.com/guide/navigation/
 - RecyclerView with ListAdapter for a better performance
@@ -11,6 +11,9 @@ The main goal of this project is to interface with **Bluetooth Heart Rate Servic
 - ViewModel
 - LiveData
 - Coroutines
+- DataBinding
+- LifeCycle Aware
+- Factory Pattern
 
 # Things learnt
 - BluetoothHealth was deprecated in API level 29. 
