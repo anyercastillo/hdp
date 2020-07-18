@@ -1,6 +1,10 @@
 package com.anyer.hdp.ui.devices
 
-import androidx.lifecycle.*
+import android.os.CountDownTimer
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.anyer.hdp.bluetooth.*
 import com.anyer.hdp.models.BleDevice
 import com.anyer.hdp.repository.AppRepository
@@ -16,20 +20,23 @@ class DevicesViewModel(
     private val _scanning = MutableLiveData<Boolean>()
     val scanning: LiveData<Boolean> = _scanning
 
-    private val _scanProgress = MediatorLiveData<Int>()
+    private val _scanProgress = MutableLiveData<Int>()
     val scanProgress: LiveData<Int> = _scanProgress
 
-    val scanProgressMax = 12 // seconds
+    val scanProgressMax = 3 // seconds
 
-    init {
-        _scanProgress.addSource(bluetooth.scanProgress()) { progress ->
-            if (progress >= scanProgressMax) {
+    private val scanProgressCounter: CountDownTimer =
+        object : CountDownTimer(scanProgressMax * 1000L, 100L) {
+            override fun onFinish() {
                 stopScanDevices()
             }
 
-            _scanProgress.postValue(progress)
+            override fun onTick(millisUntilFinished: Long) {
+                val secondsUntilFinished = millisUntilFinished / 1000L
+                val progress = scanProgressMax - secondsUntilFinished
+                _scanProgress.postValue(progress.toInt())
+            }
         }
-    }
 
     fun allDevices(): LiveData<List<BleDevice>> {
         return repository.allDevices()
@@ -61,11 +68,13 @@ class DevicesViewModel(
 
     private fun startScanDevices() = CoroutineScope(Dispatchers.IO).launch {
         _scanning.postValue(true)
+        scanProgressCounter.start()
         bluetooth.startScanDevices(bleScanCallback)
     }
 
     private fun stopScanDevices() = CoroutineScope(Dispatchers.IO).launch {
         _scanning.postValue(false)
+        scanProgressCounter.cancel()
         bluetooth.stopScanDevices(bleScanCallback)
     }
 
