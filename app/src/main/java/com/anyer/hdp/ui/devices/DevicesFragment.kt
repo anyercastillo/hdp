@@ -31,15 +31,7 @@ class DevicesFragment : Fragment() {
         ConnectionManager(requireContext(), object : HeartRateGattCallbackFactory {
             override fun create(address: String): HeartRateGattCallback {
                 val onValueChanged = { characteristic: UUID, value: Int ->
-                    when (characteristic) {
-                        HEART_RATE_MEASUREMENT_CHARACTERISTIC -> {
-                            viewModel.updateHeartRate(address, value)
-                        }
-
-                        HEART_RATE_BODY_SENSOR_LOCATION_CHARACTERISTIC -> {
-                            viewModel.updateBodySensorLocation(address, value)
-                        }
-                    }
+                    viewModel.onCharacteristicChanged(address, characteristic, value)
                 }
 
                 return HeartRateGattCallback(onValueChanged)

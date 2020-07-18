@@ -5,11 +5,14 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import com.anyer.hdp.bluetooth.HEART_RATE_BODY_SENSOR_LOCATION_CHARACTERISTIC
+import com.anyer.hdp.bluetooth.HEART_RATE_MEASUREMENT_CHARACTERISTIC
 import com.anyer.hdp.models.BleDevice
 import com.anyer.hdp.repository.AppRepository
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import java.util.*
 
 
 class DevicesViewModel(
@@ -21,7 +24,7 @@ class DevicesViewModel(
     private val _scanProgress = MutableLiveData<Int>()
     val scanProgress: LiveData<Int> = _scanProgress
 
-    val scanProgressMax = 12 // seconds
+    val scanProgressMax = 5 // seconds
 
     private val scanProgressCounter: CountDownTimer =
         object : CountDownTimer(scanProgressMax * 1000L, 100L) {
@@ -63,11 +66,23 @@ class DevicesViewModel(
         repository.updateDevices(devices.toSet())
     }
 
-    fun updateHeartRate(address: String, value: Int) {
+    fun onCharacteristicChanged(address: String, characteristic: UUID, value: Int) {
+        when (characteristic) {
+            HEART_RATE_MEASUREMENT_CHARACTERISTIC -> {
+                updateHeartRate(address, value)
+            }
+
+            HEART_RATE_BODY_SENSOR_LOCATION_CHARACTERISTIC -> {
+                updateBodySensorLocation(address, value)
+            }
+        }
+    }
+
+    private fun updateHeartRate(address: String, value: Int) {
         repository.updateHeartRate(address, value)
     }
 
-    fun updateBodySensorLocation(address: String, value: Int) {
+    private fun updateBodySensorLocation(address: String, value: Int) {
         repository.updateBodySensorLocation(address, value)
     }
 
