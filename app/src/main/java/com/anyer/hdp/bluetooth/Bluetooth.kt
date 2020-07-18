@@ -11,20 +11,11 @@ import android.os.ParcelUuid
 import androidx.lifecycle.liveData
 import com.livinglifetechway.quickpermissions_kotlin.runWithPermissions
 import kotlinx.coroutines.delay
-import java.util.*
 
 class Bluetooth(private val context: Context) {
     private var scanning = false
     private val adapter = BluetoothAdapter.getDefaultAdapter()
     private val connectedGatt = mutableSetOf<String>()
-
-    companion object {
-        val HEART_RATE_SERVICE = UUID.fromString("0000180D-0000-1000-8000-00805F9B34FB")
-        val HEART_RATE_MEASUREMENT_CHARACTERISTIC =
-            UUID.fromString("00002A37-0000-1000-8000-00805F9B34FB")
-        val HEART_RATE_BODY_SENSOR_LOCATION_CHARACTERISTIC =
-            UUID.fromString("00002A38-0000-1000-8000-00805F9B34FB")
-    }
 
     fun startScanDevices(bleScanCallback: BleScanCallback) {
         val uuid = ParcelUuid(HEART_RATE_SERVICE)

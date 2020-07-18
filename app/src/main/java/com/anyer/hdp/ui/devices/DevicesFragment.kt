@@ -5,20 +5,20 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.anyer.hdp.databinding.FragmentDevicesBluetoothBinding
-import com.anyer.hdp.ui.MainActivity
 
 
 /**
  * A simple [Fragment] subclass.
  */
 class DevicesFragment : Fragment() {
-    private val devicesAdapter = DevicesAdapter()
-    private val viewModel by lazy {
-        (activity as MainActivity).appViewModel
+    private val viewModel by viewModels<DevicesViewModel> {
+        DevicesViewModelFactory(requireContext())
     }
+    private val devicesAdapter = DevicesAdapter()
     private lateinit var binding: FragmentDevicesBluetoothBinding
 
     override fun onCreateView(
@@ -26,8 +26,9 @@ class DevicesFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        // Inflate the layout for this fragment
         binding = FragmentDevicesBluetoothBinding.inflate(inflater, container, false)
+        binding.viewModel = viewModel
+        binding.lifecycleOwner = this
 
         return binding.root
     }
@@ -36,43 +37,19 @@ class DevicesFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         setupRecyclerView()
-
-        loadAllDevices()
-
         setupScanSwitch()
-
-        setupScanProgress()
-    }
-
-    private fun setupScanProgress() {
-        val max = 15
-        binding.progressBar.max = max
-        viewModel.scanProgress.observe(viewLifecycleOwner, Observer {
-            binding.scanProgress = it
-
-            if (it >= max) {
-                binding.scan.isChecked = false
-                binding.scanProgress = -1
-                viewModel.stopScanDevices()
-            }
-        })
+        loadAllDevices()
     }
 
     private fun setupScanSwitch() {
-        binding.scan.isChecked = false
         binding.scan.setOnCheckedChangeListener { _, isChecked ->
-            if (isChecked) {
-                viewModel.startScanDevices()
-            } else {
-                viewModel.stopScanDevices()
-            }
+            viewModel.onSwitchChanged(isChecked)
         }
     }
 
     private fun setupRecyclerView() {
         binding.recyclerViewDevices.layoutManager = LinearLayoutManager(context)
         binding.recyclerViewDevices.adapter = devicesAdapter
-
     }
 
     private fun loadAllDevices() {

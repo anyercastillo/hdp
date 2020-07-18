@@ -15,7 +15,7 @@
     </fragment>
     <fragment
         android:id="@+id/disabledBluetoothFragment"
-        android:name="com.anyer.hdp.ui.DisabledBluetoothFragment"
+        android:name="com.anyer.hdp.ui.error.DisabledBluetoothFragment"
         android:label="fragment_disabled_bluetooth"
         tools:layout="@layout/fragment_disabled_bluetooth" />
 </navigation>

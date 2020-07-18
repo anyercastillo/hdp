@@ -1,4 +1,4 @@
-package com.anyer.hdp.ui
+package com.anyer.hdp.ui.error
 
 import android.os.Bundle
 import android.view.LayoutInflater

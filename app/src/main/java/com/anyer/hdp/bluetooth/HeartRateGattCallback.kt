@@ -30,7 +30,7 @@ class HeartRateGattCallback(
         if (gatt == null) return
 
         subscribeToMeasureCharacteristic(gatt)
-        readCharacteristic(gatt, Bluetooth.HEART_RATE_BODY_SENSOR_LOCATION_CHARACTERISTIC)
+        readCharacteristic(gatt, HEART_RATE_BODY_SENSOR_LOCATION_CHARACTERISTIC)
     }
 
     override fun onCharacteristicChanged(
@@ -41,7 +41,7 @@ class HeartRateGattCallback(
         if (characteristic == null) return
 
         when (characteristic.uuid) {
-            Bluetooth.HEART_RATE_MEASUREMENT_CHARACTERISTIC -> {
+            HEART_RATE_MEASUREMENT_CHARACTERISTIC -> {
                 val heartRateMeasurement = characteristic.getIntValue(FORMAT_UINT8, 1)
                 onChange(characteristic.uuid, heartRateMeasurement)
             }
@@ -57,7 +57,7 @@ class HeartRateGattCallback(
         if (characteristic == null) return
 
         when (characteristic.uuid) {
-            Bluetooth.HEART_RATE_BODY_SENSOR_LOCATION_CHARACTERISTIC -> {
+            HEART_RATE_BODY_SENSOR_LOCATION_CHARACTERISTIC -> {
                 val bodySensorLocation = characteristic.getIntValue(FORMAT_UINT8, 0)
                 onChange(characteristic.uuid, bodySensorLocation)
             }
@@ -65,7 +65,7 @@ class HeartRateGattCallback(
     }
 
     private fun readCharacteristic(gatt: BluetoothGatt, uuid: UUID) = scope.launch {
-        val characteristic = gatt.getService(Bluetooth.HEART_RATE_SERVICE)?.getCharacteristic(uuid)
+        val characteristic = gatt.getService(HEART_RATE_SERVICE)?.getCharacteristic(uuid)
 
         while (scope.isActive) {
             gatt.readCharacteristic(characteristic)
@@ -74,8 +74,8 @@ class HeartRateGattCallback(
     }
 
     private fun subscribeToMeasureCharacteristic(gatt: BluetoothGatt) {
-        val characteristic = gatt.getService(Bluetooth.HEART_RATE_SERVICE)
-            ?.getCharacteristic(Bluetooth.HEART_RATE_MEASUREMENT_CHARACTERISTIC) ?: return
+        val characteristic = gatt.getService(HEART_RATE_SERVICE)
+            ?.getCharacteristic(HEART_RATE_MEASUREMENT_CHARACTERISTIC) ?: return
 
         gatt.setCharacteristicNotification(characteristic, true)
     }

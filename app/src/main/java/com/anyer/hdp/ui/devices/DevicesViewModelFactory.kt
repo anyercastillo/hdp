@@ -1,4 +1,4 @@
-package com.anyer.hdp
+package com.anyer.hdp.ui.devices
 
 import android.content.Context
 import androidx.lifecycle.ViewModel
@@ -8,12 +8,15 @@ import com.anyer.hdp.db.AppRoomDatabase
 import com.anyer.hdp.repository.AppRepository
 
 @Suppress("UNCHECKED_CAST")
-class AppViewModelFactory(private val context: Context) : ViewModelProvider.NewInstanceFactory() {
+class DevicesViewModelFactory(private val context: Context) : ViewModelProvider.NewInstanceFactory() {
     override fun <T : ViewModel?> create(modelClass: Class<T>): T {
         val devicesDao = AppRoomDatabase.getDatabase(context).devicesDao()
         val repository = AppRepository(devicesDao)
         val bluetooth = Bluetooth(context)
 
-        return AppViewModel(repository, bluetooth) as T
+        return DevicesViewModel(
+            repository,
+            bluetooth
+        ) as T
     }
 }
