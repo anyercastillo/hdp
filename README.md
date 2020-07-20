@@ -1,6 +1,6 @@
 # POC 
 The main goal of this project is to interface with **Bluetooth Heart Rate Service.** 
-
+Check the project https://github.com/anyercastillo/gatt-server for a mock device
 
 # Watch for:
 - Bluetooth Gatt https://developer.android.com/reference/android/bluetooth/BluetoothGatt 
