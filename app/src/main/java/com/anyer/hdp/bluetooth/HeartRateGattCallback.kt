@@ -4,11 +4,18 @@ import android.bluetooth.BluetoothGatt
 import android.bluetooth.BluetoothGattCallback
 import android.bluetooth.BluetoothGattCharacteristic
 import android.bluetooth.BluetoothGattCharacteristic.FORMAT_UINT8
+import android.bluetooth.BluetoothGattDescriptor
 import java.util.*
+
 
 class HeartRateGattCallback(
     private val onValueChanged: (characteristic: UUID, value: Int) -> Unit
 ) : BluetoothGattCallback() {
+    // TODO: Needs research.
+    // Seems like a call to BluetoothDevice.connectGatt(context, false, heartRateGattCallback)
+    // cannot share the same callback "heartRateGattCallback" for more than one characteristic
+    // BluetoothGatt.writeDescriptor(descriptor) will affect all operations in BluetoothGatt
+
     override fun onConnectionStateChange(gatt: BluetoothGatt?, status: Int, newState: Int) {
         if (newState == BluetoothGatt.STATE_CONNECTED) {
             gatt?.requestMtu(256)
@@ -31,7 +38,9 @@ class HeartRateGattCallback(
         when (characteristic?.uuid) {
             HEART_RATE_MEASUREMENT_CHARACTERISTIC -> {
                 val heartRateMeasurement = characteristic.getIntValue(FORMAT_UINT8, 1)
-                onValueChanged(characteristic.uuid, heartRateMeasurement)
+                if (heartRateMeasurement != null) {
+                    onValueChanged(characteristic.uuid, heartRateMeasurement)
+                }
             }
         }
     }
@@ -60,5 +69,13 @@ class HeartRateGattCallback(
             ?.getCharacteristic(HEART_RATE_MEASUREMENT_CHARACTERISTIC)
 
         gatt?.setCharacteristicNotification(characteristic, true)
+
+        // A better API would be for setCharacteristicNotification to set the descriptor,
+        // but unfortunately it doesn't seem to work that way.
+        val uuid = UUID.fromString("00002902-0000-1000-8000-00805f9b34fb")
+        val descriptor = characteristic?.getDescriptor(uuid)
+        descriptor?.value = BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE
+        gatt?.writeDescriptor(descriptor)
+
     }
 }
