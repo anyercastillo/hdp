@@ -14,6 +14,7 @@ Check the project https://github.com/anyercastillo/gatt-server for a mock device
 - DataBinding
 - LifeCycle Aware
 - Factory Pattern
+- Hilt
 
 # Things learnt
 - BluetoothHealth was deprecated in API level 29. 

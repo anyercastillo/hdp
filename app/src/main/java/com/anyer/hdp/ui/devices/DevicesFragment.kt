@@ -10,17 +10,21 @@ import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.anyer.hdp.bluetooth.*
 import com.anyer.hdp.databinding.FragmentDevicesBluetoothBinding
+import dagger.hilt.android.AndroidEntryPoint
 import java.util.*
+import javax.inject.Inject
 
 
 /**
  * A simple [Fragment] subclass.
  */
+@AndroidEntryPoint
 class DevicesFragment : Fragment() {
-    private val viewModel by viewModels<DevicesViewModel> {
-        DevicesViewModelFactory(requireContext())
-    }
-    private val devicesAdapter = DevicesAdapter()
+    private val viewModel: DevicesViewModel by viewModels()
+
+    @Inject
+    lateinit var devicesAdapter: DevicesAdapter
+
     private lateinit var binding: FragmentDevicesBluetoothBinding
 
     private val bleScanCallback = BleScanCallback { devices ->
@@ -84,9 +88,9 @@ class DevicesFragment : Fragment() {
     private fun observeScanning() {
         viewModel.scanning.observe(viewLifecycleOwner, Observer { scanning ->
             if (scanning) {
-                bluetoothStartScanDevices(requireContext(), bleScanCallback)
+                bluetoothStartScanDevices(this, bleScanCallback)
             } else {
-                bluetoothStopScanDevices(requireContext(), bleScanCallback)
+                bluetoothStopScanDevices(this, bleScanCallback)
             }
         })
     }

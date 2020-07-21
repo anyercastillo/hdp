@@ -5,8 +5,11 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.ListAdapter
 import com.anyer.hdp.R
 import com.anyer.hdp.models.BleDevice
+import javax.inject.Inject
 
-class DevicesAdapter : ListAdapter<BleDevice, DeviceViewHolder>(DeviceItemDiffCallback()) {
+class DevicesAdapter @Inject constructor(diffCallback: DeviceItemDiffCallback) :
+    ListAdapter<BleDevice, DeviceViewHolder>(diffCallback) {
+
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): DeviceViewHolder {
         return DeviceViewHolder(
             LayoutInflater

@@ -1,6 +1,7 @@
 package com.anyer.hdp.ui.devices
 
 import android.os.CountDownTimer
+import androidx.hilt.lifecycle.ViewModelInject
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
@@ -15,7 +16,7 @@ import kotlinx.coroutines.launch
 import java.util.*
 
 
-class DevicesViewModel(
+class DevicesViewModel @ViewModelInject constructor(
     private val repository: AppRepository
 ) : ViewModel() {
     private val _scanning = MutableLiveData<Boolean>()

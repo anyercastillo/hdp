@@ -4,11 +4,15 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.liveData
 import androidx.lifecycle.map
 import com.anyer.hdp.dao.DevicesDao
+import com.anyer.hdp.db.AppRoomDatabase
 import com.anyer.hdp.db.entities.Device
 import com.anyer.hdp.models.BleDevice
 import kotlinx.coroutines.Dispatchers
+import javax.inject.Inject
 
-class AppRepository(private val devicesDao: DevicesDao) {
+class AppRepository @Inject constructor(db: AppRoomDatabase) {
+    private val devicesDao = db.devicesDao()
+
     fun allDevices(): LiveData<List<BleDevice>> = liveData(Dispatchers.IO) {
         emitSource(
             devicesDao
