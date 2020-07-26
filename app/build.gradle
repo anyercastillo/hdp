@@ -100,4 +100,7 @@ dependencies {
     kapt "com.google.dagger:hilt-android-compiler:$dagger_hilt"
 
     implementation "com.github.quickpermissions:quickpermissions-kotlin:$quick_permission_version"
+
+    // Test
+    testImplementation 'junit:junit:4.13'
 }
