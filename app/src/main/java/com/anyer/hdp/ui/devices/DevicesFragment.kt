@@ -8,10 +8,11 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.anyer.hdp.bluetooth.*
+import com.anyer.hdp.bluetooth.BleScanCallback
+import com.anyer.hdp.bluetooth.bluetoothStartScanDevices
+import com.anyer.hdp.bluetooth.bluetoothStopScanDevices
 import com.anyer.hdp.databinding.FragmentDevicesBluetoothBinding
 import dagger.hilt.android.AndroidEntryPoint
-import java.util.*
 import javax.inject.Inject
 
 
@@ -31,18 +32,6 @@ class DevicesFragment : Fragment() {
         viewModel.onBluetoothScanChanged(devices)
     }
 
-    private val connectionManager by lazy {
-        ConnectionManager(requireContext(), object : HeartRateGattCallbackFactory {
-            override fun create(address: String): HeartRateGattCallback {
-                val onValueChanged = { characteristic: UUID, value: Int ->
-                    viewModel.onCharacteristicChanged(address, characteristic, value)
-                }
-
-                return HeartRateGattCallback(onValueChanged)
-            }
-        })
-    }
-
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -58,14 +47,11 @@ class DevicesFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        viewLifecycleOwner.lifecycle.addObserver(connectionManager)
-
         setupRecyclerView()
         setupScanSwitch()
 
         observeDevices()
         observeScanning()
-        observeConnectAddresses()
     }
 
     private fun setupScanSwitch() {
@@ -92,12 +78,6 @@ class DevicesFragment : Fragment() {
             } else {
                 bluetoothStopScanDevices(this, bleScanCallback)
             }
-        })
-    }
-
-    private fun observeConnectAddresses() {
-        viewModel.connectAddresses.observe(viewLifecycleOwner, Observer { addresses ->
-            connectionManager.updateConnections(addresses)
         })
     }
 }

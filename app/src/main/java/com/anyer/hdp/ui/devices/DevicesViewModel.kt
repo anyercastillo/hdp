@@ -3,17 +3,13 @@ package com.anyer.hdp.ui.devices
 import android.os.CountDownTimer
 import androidx.hilt.lifecycle.ViewModelInject
 import androidx.lifecycle.LiveData
-import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.anyer.hdp.bluetooth.HEART_RATE_BODY_SENSOR_LOCATION_CHARACTERISTIC
-import com.anyer.hdp.bluetooth.HEART_RATE_MEASUREMENT_CHARACTERISTIC
 import com.anyer.hdp.models.BleDevice
 import com.anyer.hdp.repository.AppRepository
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import java.util.*
 
 
 class DevicesViewModel @ViewModelInject constructor(
@@ -42,19 +38,6 @@ class DevicesViewModel @ViewModelInject constructor(
 
     val devices: LiveData<List<BleDevice>> = repository.allDevices()
 
-    private val _connectAddresses = MediatorLiveData<List<String>>()
-    val connectAddresses: LiveData<List<String>> = _connectAddresses
-
-    init {
-        _connectAddresses.addSource(devices) {
-            computeConnectAddresses()
-        }
-
-        _connectAddresses.addSource(scanning) {
-            computeConnectAddresses()
-        }
-    }
-
     fun onSwitchChanged(isChecked: Boolean) {
         if (isChecked) {
             startScanDevices()
@@ -67,26 +50,6 @@ class DevicesViewModel @ViewModelInject constructor(
         repository.updateDevices(devices.toSet())
     }
 
-    fun onCharacteristicChanged(address: String, characteristic: UUID, value: Int) {
-        when (characteristic) {
-            HEART_RATE_MEASUREMENT_CHARACTERISTIC -> {
-                updateHeartRate(address, value)
-            }
-
-            HEART_RATE_BODY_SENSOR_LOCATION_CHARACTERISTIC -> {
-                updateBodySensorLocation(address, value)
-            }
-        }
-    }
-
-    private fun updateHeartRate(address: String, value: Int) {
-        repository.updateHeartRate(address, value)
-    }
-
-    private fun updateBodySensorLocation(address: String, value: Int) {
-        repository.updateBodySensorLocation(address, value)
-    }
-
     private fun startScanDevices() = CoroutineScope(Dispatchers.IO).launch {
         _scanning.postValue(true)
         scanProgressCounter.start()
@@ -95,11 +58,5 @@ class DevicesViewModel @ViewModelInject constructor(
     private fun stopScanDevices() = CoroutineScope(Dispatchers.IO).launch {
         _scanning.postValue(false)
         scanProgressCounter.cancel()
-    }
-
-    private fun computeConnectAddresses() {
-        if (scanning.value != true) {
-            _connectAddresses.value = devices.value?.map { device -> device.address }
-        }
     }
 }
