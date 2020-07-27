@@ -12,6 +12,7 @@ Check the project https://github.com/anyercastillo/gatt-server for a mock device
 - LiveData
 - Coroutines
 - DataBinding
+- ViewBinding
 - LifeCycle Aware
 - Factory Pattern
 - Hilt

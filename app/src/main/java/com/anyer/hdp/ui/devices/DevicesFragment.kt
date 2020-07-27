@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
@@ -12,6 +13,7 @@ import com.anyer.hdp.bluetooth.BleScanCallback
 import com.anyer.hdp.bluetooth.bluetoothStartScanDevices
 import com.anyer.hdp.bluetooth.bluetoothStopScanDevices
 import com.anyer.hdp.databinding.FragmentDevicesBluetoothBinding
+import com.anyer.hdp.models.BleDevice
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
@@ -20,7 +22,7 @@ import javax.inject.Inject
  * A simple [Fragment] subclass.
  */
 @AndroidEntryPoint
-class DevicesFragment : Fragment() {
+class DevicesFragment : Fragment(), View.OnClickListener {
     private val viewModel: DevicesViewModel by viewModels()
 
     @Inject
@@ -54,6 +56,10 @@ class DevicesFragment : Fragment() {
         observeScanning()
     }
 
+    override fun onClick(v: View?) {
+
+    }
+
     private fun setupScanSwitch() {
         binding.scan.setOnCheckedChangeListener { _, isChecked ->
             viewModel.onSwitchChanged(isChecked)
@@ -62,6 +68,12 @@ class DevicesFragment : Fragment() {
 
     private fun setupRecyclerView() {
         binding.recyclerViewDevices.layoutManager = LinearLayoutManager(context)
+
+        devicesAdapter.onClickListener = object : DeviceClickListener {
+            override fun onDeviceClick(device: BleDevice) {
+                Toast.makeText(context, "Device ${device.name} clicked", Toast.LENGTH_SHORT).show()
+            }
+        }
         binding.recyclerViewDevices.adapter = devicesAdapter
     }
 
