@@ -4,10 +4,10 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.anyer.hdp.bluetooth.BleScanCallback
 import com.anyer.hdp.bluetooth.bluetoothStartScanDevices
@@ -71,7 +71,9 @@ class DevicesFragment : Fragment(), View.OnClickListener {
 
         devicesAdapter.onClickListener = object : DeviceClickListener {
             override fun onDeviceClick(device: BleDevice) {
-                Toast.makeText(context, "Device ${device.name} clicked", Toast.LENGTH_SHORT).show()
+                val action =
+                    DevicesFragmentDirections.actionDevicesToDetails(device.address)
+                findNavController().navigate(action)
             }
         }
         binding.recyclerViewDevices.adapter = devicesAdapter

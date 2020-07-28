@@ -7,15 +7,19 @@
     <fragment
         android:id="@+id/setupBluetooth"
         android:name="com.anyer.hdp.ui.devices.DevicesFragment"
-        android:label="fragment_setup_bluetooth"
-        tools:layout="@layout/fragment_devices_bluetooth" >
+        android:label="Devices"
+        tools:layout="@layout/fragment_devices_bluetooth">
         <action
-            android:id="@+id/action_setupBluetooth_to_disabledBluetoothFragment"
-            app:destination="@id/disabledBluetoothFragment" />
+            android:id="@+id/action_devices_to_details"
+            app:destination="@id/detailsFragment" />
     </fragment>
     <fragment
-        android:id="@+id/disabledBluetoothFragment"
-        android:name="com.anyer.hdp.ui.error.DisabledBluetoothFragment"
-        android:label="fragment_disabled_bluetooth"
-        tools:layout="@layout/fragment_disabled_bluetooth" />
+        android:id="@+id/detailsFragment"
+        android:name="com.anyer.hdp.ui.details.DetailsFragment"
+        android:label="Details"
+        tools:layout="@layout/fragment_details_bluetooth">
+        <argument
+            android:name="address"
+            app:argType="string" />
+    </fragment>
 </navigation>
