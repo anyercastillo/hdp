@@ -18,11 +18,8 @@ import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
 
-/**
- * A simple [Fragment] subclass.
- */
 @AndroidEntryPoint
-class DevicesFragment : Fragment(), View.OnClickListener {
+class DevicesFragment : Fragment() {
     private val viewModel: DevicesViewModel by viewModels()
 
     @Inject
@@ -54,10 +51,6 @@ class DevicesFragment : Fragment(), View.OnClickListener {
 
         observeDevices()
         observeScanning()
-    }
-
-    override fun onClick(v: View?) {
-
     }
 
     private fun setupScanSwitch() {

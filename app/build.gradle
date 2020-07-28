@@ -102,6 +102,7 @@ dependencies {
 
     implementation "com.github.quickpermissions:quickpermissions-kotlin:$quick_permission_version"
 
+    implementation project(":app:bluetooth")
     // Test
     testImplementation 'junit:junit:4.13'
 }

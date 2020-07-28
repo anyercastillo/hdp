@@ -23,4 +23,7 @@ interface DevicesDao {
 
     @Query("UPDATE devices SET connected=:connected WHERE address=:address")
     fun updateConnected(address: String, connected: Boolean)
+
+    @Query("SELECT * from devices WHERE address=:address LIMIT 1")
+    fun getDevice(address: String): LiveData<Device>
 }

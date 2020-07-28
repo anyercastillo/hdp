@@ -7,4 +7,6 @@
     <string name="scan">Scan</string>
     <string name="heart_rate">Heart Rate</string>
     <string name="body_sensor_location">Body Sensor Location</string>
+    <string name="heart_rate_measurement">Heart Rate Measurement</string>
+    <string name="read_characteristics">Read Characteristics</string>
 </resources>
