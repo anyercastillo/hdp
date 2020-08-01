@@ -64,9 +64,9 @@ class DevicesFragment : Fragment() {
 
         devicesAdapter.onClickListener = object : DeviceClickListener {
             override fun onDeviceClick(device: BleDevice) {
-                val action =
+                val directions =
                     DevicesFragmentDirections.actionDevicesToDetails(device.address)
-                findNavController().navigate(action)
+                findNavController().navigate(directions)
             }
         }
         binding.recyclerViewDevices.adapter = devicesAdapter

@@ -8,7 +8,8 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.anyer.bluetooth.*
+import com.anyer.bluetooth.ConnectionManager
+import com.anyer.bluetooth.OperationsManager
 import com.anyer.hdp.bluetooth.HEART_RATE_BODY_SENSOR_LOCATION_CHARACTERISTIC
 import com.anyer.hdp.bluetooth.HEART_RATE_MEASUREMENT_CHARACTERISTIC
 import com.anyer.hdp.bluetooth.HEART_RATE_SERVICE
@@ -17,12 +18,15 @@ import com.anyer.hdp.repository.AppRepository
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import java.util.*
 
 
 class DevicesViewModel @ViewModelInject constructor(
     private val repository: AppRepository
 ) : ViewModel() {
-    private val subscriptions = mutableMapOf<String, CharacteristicSubscription>()
+    // TODO: Inject this.
+    private val connectionManager =
+        ConnectionManager(BluetoothAdapter.getDefaultAdapter(), OperationsManager(LinkedList()))
 
     private val _scanning = MutableLiveData<Boolean>()
     val scanning: LiveData<Boolean> = _scanning
@@ -49,9 +53,8 @@ class DevicesViewModel @ViewModelInject constructor(
 
     override fun onCleared() {
         super.onCleared()
-        subscriptions.onEach {
-            it.value.unsubscribe()
-        }
+
+        // TODO: Disconnect from BLE here
     }
 
     fun onSwitchChanged(isChecked: Boolean) {
@@ -70,13 +73,12 @@ class DevicesViewModel @ViewModelInject constructor(
 
     fun readBodySensorLocation(address: String) {
         viewModelScope.launch(Dispatchers.IO) {
-            val value = readCharacteristicCoroutine(
-                BluetoothAdapter.getDefaultAdapter().getRemoteDevice(address),
-                ReadCharacteristicCallback(
-                    HEART_RATE_SERVICE,
-                    HEART_RATE_BODY_SENSOR_LOCATION_CHARACTERISTIC
-                )
+            val value = connectionManager.readCharacteristic(
+                address,
+                HEART_RATE_SERVICE,
+                HEART_RATE_BODY_SENSOR_LOCATION_CHARACTERISTIC
             )
+
             repository.updateBodySensorLocation(
                 address,
                 value.getIntValue(FORMAT_UINT8, 0)
@@ -86,26 +88,17 @@ class DevicesViewModel @ViewModelInject constructor(
 
     fun subscribeToHearRateMeasurement(address: String) {
         viewModelScope.launch(Dispatchers.IO) {
-            val subscription = subscribeToCharacteristicCoroutine(
-                BluetoothAdapter.getDefaultAdapter().getRemoteDevice(address),
-                SubscribeCharacteristicCallback(
-                    HEART_RATE_SERVICE,
-                    HEART_RATE_MEASUREMENT_CHARACTERISTIC,
-                    CharacteristicSubscription()
-                )
+            val subscription = connectionManager.subscribeCharacteristic(
+                address,
+                HEART_RATE_SERVICE,
+                HEART_RATE_MEASUREMENT_CHARACTERISTIC
             )
 
-            disconnectDevice(address)
-            subscriptions[address] = subscription
-
             subscription.onValueChange {
-                repository.updateHeartRate(address, it.getIntValue(FORMAT_UINT8, 1))
+                val gattCharacteristic = it.getOrNull() ?: return@onValueChange
+                repository.updateHeartRate(address, gattCharacteristic.getIntValue(FORMAT_UINT8, 1))
             }
         }
-    }
-
-    fun disconnectDevice(address: String) {
-        subscriptions[address]?.unsubscribe()
     }
 
     private fun startScanDevices() = CoroutineScope(Dispatchers.IO).launch {

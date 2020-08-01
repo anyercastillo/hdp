@@ -33,7 +33,6 @@ class DetailsFragment : Fragment() {
         return binding.root
     }
 
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
@@ -43,11 +42,5 @@ class DetailsFragment : Fragment() {
 
         viewModel.readBodySensorLocation(address)
         viewModel.subscribeToHearRateMeasurement(address)
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
-
-        viewModel.disconnectDevice(address)
     }
 }
