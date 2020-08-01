@@ -1,6 +1,8 @@
 package com.anyer.bluetooth
 
 import android.bluetooth.BluetoothGatt
-import android.bluetooth.BluetoothGattCallback
 
+/**
+ * A data class holder for a [BluetoothGatt] and [RemoteDeviceGattCallback]
+ */
 data class ConnectionInfo(val bluetoothGatt: BluetoothGatt, val callback: RemoteDeviceGattCallback)

@@ -9,6 +9,19 @@ import java.util.concurrent.ConcurrentHashMap
 import kotlin.coroutines.Continuation
 import kotlin.coroutines.suspendCoroutine
 
+/**
+ * This class is responsible for managing all the BLE connections in a thread safe way.
+ *
+ * It also provide a convenient set of suspend functions for common operations like:
+ *  - [readCharacteristic]
+ *  - [subscribeCharacteristic]
+ *  - [disconnectFrom]
+ *
+ *  For a given operation it will re-use an existing connection or create a new one if none is available.
+ *
+ * @param adapter: A bluetooth adapter
+ * @param operationsManager: An [OperationsManager] to ensure only one operation at the time.
+ */
 class ConnectionManager(
     private val adapter: BluetoothAdapter,
     private val operationsManager: OperationsManager

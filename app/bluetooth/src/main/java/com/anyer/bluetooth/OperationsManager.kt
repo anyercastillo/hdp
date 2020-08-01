@@ -1,6 +1,7 @@
 package com.anyer.bluetooth
 
 import android.bluetooth.BluetoothGattCharacteristic
+import com.android.example.github.testing.OpenForTesting
 import java.util.*
 
 open class OperationsManager(
@@ -9,8 +10,9 @@ open class OperationsManager(
     var currentOperation: Operation? = null
         private set
 
+    @OpenForTesting
     @Synchronized
-    fun add(operation: Operation) {
+    open fun add(operation: Operation) {
         queue.add(operation)
         processNext()
     }

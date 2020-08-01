@@ -5,7 +5,7 @@ import android.bluetooth.BluetoothGattCallback
 import android.bluetooth.BluetoothGattCharacteristic
 import android.bluetooth.BluetoothGattDescriptor
 
-class RemoteDeviceGattCallback(
+open class RemoteDeviceGattCallback(
     private val operationsManager: OperationsManager,
     val subscription: CharacteristicSubscription
 ) : BluetoothGattCallback() {

@@ -1,10 +1,20 @@
 package com.anyer.bluetooth
 
 import android.bluetooth.BluetoothGattCharacteristic
-import com.android.example.github.testing.OpenForTesting
 
-@OpenForTesting
-open class CharacteristicSubscription {
+/**
+ * A subscription for characteristic.
+ * Subscriber must provide an action using [onValueChange].
+ *
+ * Example:
+ * val subscription = CharacteristicSubscription()
+ * subscription.onValueChange { result ->
+ *    Log.d("TAG", "Result: $result")
+ * }
+ *
+ * subscription.notify(Result.success(characteristic))
+ */
+class CharacteristicSubscription {
     private var _onValueChange: ((result: Result<BluetoothGattCharacteristic?>) -> Unit)? = null
 
     /**
@@ -14,8 +24,7 @@ open class CharacteristicSubscription {
         _onValueChange = callback
     }
 
-    @OpenForTesting
-    open fun notify(result: Result<BluetoothGattCharacteristic?>) {
+    fun notify(result: Result<BluetoothGattCharacteristic?>) {
         _onValueChange?.let { it(result) }
     }
 }
