@@ -3,7 +3,10 @@ package com.anyer.bluetooth
 import android.bluetooth.BluetoothAdapter
 import android.bluetooth.BluetoothGattCharacteristic
 import androidx.lifecycle.LifecycleObserver
-import kotlinx.coroutines.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.util.*
 import java.util.concurrent.ConcurrentHashMap
 import kotlin.coroutines.Continuation
@@ -24,7 +27,8 @@ import kotlin.coroutines.suspendCoroutine
  */
 class ConnectionManager(
     private val adapter: BluetoothAdapter,
-    private val operationsManager: OperationsManager
+    private val operationsManager: OperationsManager,
+    private val coroutineContextProvider: CoroutineContextProvider
 ) : LifecycleObserver {
     private val connections = ConcurrentHashMap<String, ConnectionInfo>()
 
@@ -38,9 +42,10 @@ class ConnectionManager(
         // Android Bluetooth API level.
         // The safest workaround is just to call `close()` after some time.
         // TODO: Use 1.5x of the round-trip defined in the peripheral specs.
-        CoroutineScope(Dispatchers.IO).launch {
+        CoroutineScope(coroutineContextProvider.IO).launch {
             delay(1000)
             bluetoothGatt?.close()
+            connections.remove(address)
         }
     }
 
@@ -48,7 +53,7 @@ class ConnectionManager(
         address: String,
         service: UUID,
         characteristic: UUID
-    ): BluetoothGattCharacteristic = withContext(Dispatchers.IO) {
+    ): BluetoothGattCharacteristic = withContext(coroutineContextProvider.IO) {
         if (isNotConnected(address)) {
             connectTo(address)
         }
@@ -75,7 +80,7 @@ class ConnectionManager(
         address: String,
         service: UUID,
         characteristic: UUID
-    ): CharacteristicSubscription = withContext(Dispatchers.IO) {
+    ): CharacteristicSubscription = withContext(coroutineContextProvider.IO) {
         if (isNotConnected(address)) {
             connectTo(address)
         }
