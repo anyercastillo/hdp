@@ -9,6 +9,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.util.*
 import java.util.concurrent.ConcurrentHashMap
+import javax.inject.Inject
 import kotlin.coroutines.Continuation
 import kotlin.coroutines.suspendCoroutine
 
@@ -25,11 +26,11 @@ import kotlin.coroutines.suspendCoroutine
  * @param adapter: A bluetooth adapter
  * @param operationsManager: An [OperationsManager] to ensure only one operation at the time.
  */
-class ConnectionManager(
+class ConnectionManager @Inject constructor(
     private val adapter: BluetoothAdapter,
     private val operationsManager: OperationsManager,
     private val coroutineContextProvider: CoroutineContextProvider
-) : LifecycleObserver {
+)  : LifecycleObserver {
     private val connections = ConcurrentHashMap<String, ConnectionInfo>()
 
     fun disconnectFrom(address: String) {

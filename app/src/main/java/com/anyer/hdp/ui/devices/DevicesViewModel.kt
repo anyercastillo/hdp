@@ -1,6 +1,5 @@
 package com.anyer.hdp.ui.devices
 
-import android.bluetooth.BluetoothAdapter
 import android.bluetooth.BluetoothGattCharacteristic.FORMAT_UINT8
 import android.os.CountDownTimer
 import androidx.hilt.lifecycle.ViewModelInject
@@ -9,8 +8,6 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.anyer.bluetooth.ConnectionManager
-import com.anyer.bluetooth.CoroutineContextProvider
-import com.anyer.bluetooth.OperationsManager
 import com.anyer.hdp.bluetooth.HEART_RATE_BODY_SENSOR_LOCATION_CHARACTERISTIC
 import com.anyer.hdp.bluetooth.HEART_RATE_MEASUREMENT_CHARACTERISTIC
 import com.anyer.hdp.bluetooth.HEART_RATE_SERVICE
@@ -19,16 +16,12 @@ import com.anyer.hdp.repository.AppRepository
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import java.util.*
 
 
 class DevicesViewModel @ViewModelInject constructor(
-    private val repository: AppRepository
+    private val repository: AppRepository,
+    private val connectionManager: ConnectionManager
 ) : ViewModel() {
-    // TODO: Inject this.
-    private val connectionManager =
-        ConnectionManager(BluetoothAdapter.getDefaultAdapter(), OperationsManager(LinkedList()), CoroutineContextProvider())
-
     private val _scanning = MutableLiveData<Boolean>()
     val scanning: LiveData<Boolean> = _scanning
 

@@ -3,9 +3,10 @@ package com.anyer.bluetooth
 import android.bluetooth.BluetoothGattCharacteristic
 import com.android.example.github.testing.OpenForTesting
 import java.util.*
+import javax.inject.Inject
 
 @OpenForTesting
-open class OperationsManager(
+open class OperationsManager @Inject constructor(
     private val queue: Queue<Operation>
 ) {
     var currentOperation: Operation? = null
