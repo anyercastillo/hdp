@@ -22,6 +22,7 @@ class DevicesViewModel @ViewModelInject constructor(
     private val repository: AppRepository,
     private val connectionManager: ConnectionManager
 ) : ViewModel() {
+    private val connectedAddresses = mutableSetOf<String>()
     private val _scanning = MutableLiveData<Boolean>()
     val scanning: LiveData<Boolean> = _scanning
 
@@ -48,7 +49,15 @@ class DevicesViewModel @ViewModelInject constructor(
     override fun onCleared() {
         super.onCleared()
 
-        // TODO: Disconnect from BLE here
+        disconnectBluetooth()
+    }
+
+    fun disconnectBluetooth() {
+        connectedAddresses.forEach { address->
+            connectionManager.disconnectFrom(address)
+        }
+
+        connectedAddresses.clear()
     }
 
     fun onSwitchChanged(isChecked: Boolean) {
@@ -66,6 +75,7 @@ class DevicesViewModel @ViewModelInject constructor(
     fun getDevice(address: String) = repository.getDevice(address)
 
     fun readBodySensorLocation(address: String) {
+        connectedAddresses.add(address)
         viewModelScope.launch(Dispatchers.IO) {
             val value = connectionManager.readCharacteristic(
                 address,
@@ -81,6 +91,7 @@ class DevicesViewModel @ViewModelInject constructor(
     }
 
     fun subscribeToHearRateMeasurement(address: String) {
+        connectedAddresses.add(address)
         viewModelScope.launch(Dispatchers.IO) {
             val subscription = connectionManager.subscribeCharacteristic(
                 address,

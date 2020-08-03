@@ -10,6 +10,7 @@ import kotlinx.coroutines.withContext
 import java.util.*
 import java.util.concurrent.ConcurrentHashMap
 import javax.inject.Inject
+import javax.inject.Singleton
 import kotlin.coroutines.Continuation
 import kotlin.coroutines.suspendCoroutine
 
@@ -26,6 +27,7 @@ import kotlin.coroutines.suspendCoroutine
  * @param adapter: A bluetooth adapter
  * @param operationsManager: An [OperationsManager] to ensure only one operation at the time.
  */
+@Singleton
 class ConnectionManager @Inject constructor(
     private val adapter: BluetoothAdapter,
     private val operationsManager: OperationsManager,

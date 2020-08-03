@@ -53,6 +53,12 @@ class DevicesFragment : Fragment() {
         observeScanning()
     }
 
+    override fun onDestroy() {
+        super.onDestroy()
+
+        viewModel.disconnectBluetooth()
+    }
+
     private fun setupScanSwitch() {
         binding.scan.setOnCheckedChangeListener { _, isChecked ->
             viewModel.onSwitchChanged(isChecked)
