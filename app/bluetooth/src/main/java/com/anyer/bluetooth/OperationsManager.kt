@@ -5,6 +5,9 @@ import com.android.example.github.testing.OpenForTesting
 import java.util.*
 import javax.inject.Inject
 
+/**
+ * This class guarantees one [Operation] at a time.
+ */
 @OpenForTesting
 open class OperationsManager @Inject constructor(
     private val queue: Queue<Operation>
