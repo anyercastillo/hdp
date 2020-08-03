@@ -4,6 +4,7 @@ import android.bluetooth.BluetoothGattCharacteristic
 import com.android.example.github.testing.OpenForTesting
 import java.util.*
 
+@OpenForTesting
 open class OperationsManager(
     private val queue: Queue<Operation>
 ) {
@@ -17,12 +18,13 @@ open class OperationsManager(
         processNext()
     }
 
+    @OpenForTesting
     @Synchronized
     // TODO: Improve function signature to accept:
     //  - event: ServicesDiscovered | DescriptorWrite | CharacteristicRead | ...
     //  - result: Result<EventValue>.
     //  Example: complete(CharacteristicRead, Result.success(BluetoothGattCharacteristic()))
-    fun complete(result: Result<BluetoothGattCharacteristic?>) {
+    open fun complete(result: Result<BluetoothGattCharacteristic?>) {
         currentOperation?.complete(result)
 
         currentOperation = null

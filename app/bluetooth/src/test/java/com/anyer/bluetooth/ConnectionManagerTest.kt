@@ -45,6 +45,28 @@ class ConnectionManagerTest {
     }
 
     @Test
+    fun `subscribeCharacteristic creates a connection if does not exist`() = runBlocking {
+        val mockAdapter: BluetoothAdapter = mock()
+        val mockDevice: BluetoothDevice = mock()
+        val mockBluetoothGatt: BluetoothGatt = mock()
+        val mockCharacteristic: BluetoothGattCharacteristic = mock()
+
+        whenever(mockDevice.connectGatt(anyOrNull(), any(), any())).thenReturn(mockBluetoothGatt)
+        whenever(mockAdapter.getRemoteDevice(any<String>())).thenReturn(mockDevice)
+
+        val mockOperationManager = object : OperationsManager(LinkedList()) {
+            override fun add(operation: Operation) {
+                operation.complete(Result.success(mockCharacteristic))
+            }
+        }
+        val connectionManager = ConnectionManager(mockAdapter, mockOperationManager)
+        connectionManager.subscribeCharacteristic("address", uuid, uuid)
+
+        verify(mockDevice, times(1)).connectGatt(anyOrNull(), any(), any())
+        assert(true)
+    }
+
+    @Test
     fun `readCharacteristic re-uses an existing connection`() = runBlocking {
         val mockAdapter: BluetoothAdapter = mock()
         val mockDevice: BluetoothDevice = mock()
@@ -67,8 +89,32 @@ class ConnectionManagerTest {
         assert(true)
     }
 
+
     @Test
-    fun `readCharacteristic return a characteristic`() = runBlocking {
+    fun `subscribeCharacteristic re-uses an existing connection`() = runBlocking {
+        val mockAdapter: BluetoothAdapter = mock()
+        val mockDevice: BluetoothDevice = mock()
+        val mockBluetoothGatt: BluetoothGatt = mock()
+        val mockCharacteristic: BluetoothGattCharacteristic = mock()
+
+        whenever(mockDevice.connectGatt(anyOrNull(), any(), any())).thenReturn(mockBluetoothGatt)
+        whenever(mockAdapter.getRemoteDevice(any<String>())).thenReturn(mockDevice)
+
+        val mockOperationManager = object : OperationsManager(LinkedList()) {
+            override fun add(operation: Operation) {
+                operation.complete(Result.success(mockCharacteristic))
+            }
+        }
+        val connectionManager = ConnectionManager(mockAdapter, mockOperationManager)
+        connectionManager.subscribeCharacteristic("address", uuid, uuid) // Creates the connection
+        connectionManager.subscribeCharacteristic("address", uuid, uuid) // Re-uses the connection
+
+        verify(mockDevice, times(1)).connectGatt(anyOrNull(), any(), any())
+        assert(true)
+    }
+
+    @Test
+    fun `readCharacteristic returns a characteristic`() = runBlocking {
         val mockAdapter: BluetoothAdapter = mock()
         val mockDevice: BluetoothDevice = mock()
         val mockBluetoothGatt: BluetoothGatt = mock()
@@ -86,5 +132,26 @@ class ConnectionManagerTest {
         val characteristic = connectionManager.readCharacteristic("address", uuid, uuid)
 
         Assert.assertEquals(characteristic, mockCharacteristic)
+    }
+
+    @Test
+    fun `subscribeCharacteristic subscribes to a characteristic`() = runBlocking {
+        val mockAdapter: BluetoothAdapter = mock()
+        val mockDevice: BluetoothDevice = mock()
+        val mockBluetoothGatt: BluetoothGatt = mock()
+        val mockCharacteristic: BluetoothGattCharacteristic = mock()
+
+        whenever(mockDevice.connectGatt(anyOrNull(), any(), any())).thenReturn(mockBluetoothGatt)
+        whenever(mockAdapter.getRemoteDevice(any<String>())).thenReturn(mockDevice)
+
+        val mockOperationManager = object : OperationsManager(LinkedList()) {
+            override fun add(operation: Operation) {
+                operation.complete(Result.success(mockCharacteristic))
+            }
+        }
+        val connectionManager = ConnectionManager(mockAdapter, mockOperationManager)
+        val subscription = connectionManager.subscribeCharacteristic("address", uuid, uuid)
+
+        Assert.assertNotNull(subscription)
     }
 }

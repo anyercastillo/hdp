@@ -14,8 +14,6 @@ open class RemoteDeviceGattCallback(
     }
 
     override fun onConnectionStateChange(gatt: BluetoothGatt?, status: Int, newState: Int) {
-        super.onConnectionStateChange(gatt, status, newState)
-
         gatt ?: return
 
         if (status == BluetoothGatt.GATT_SUCCESS && newState == BluetoothGatt.STATE_CONNECTED) {
@@ -24,8 +22,6 @@ open class RemoteDeviceGattCallback(
     }
 
     override fun onServicesDiscovered(gatt: BluetoothGatt?, status: Int) {
-        super.onServicesDiscovered(gatt, status)
-
         operationsManager.complete(Result.success(null))
     }
 
@@ -34,8 +30,6 @@ open class RemoteDeviceGattCallback(
         characteristic: BluetoothGattCharacteristic?,
         status: Int
     ) {
-        super.onCharacteristicRead(gatt, characteristic, status)
-
         operationsManager.complete(Result.success(characteristic))
     }
 
@@ -44,8 +38,6 @@ open class RemoteDeviceGattCallback(
         descriptor: BluetoothGattDescriptor?,
         status: Int
     ) {
-        super.onDescriptorWrite(gatt, descriptor, status)
-
         operationsManager.complete(Result.success(null))
     }
 
@@ -53,8 +45,6 @@ open class RemoteDeviceGattCallback(
         gatt: BluetoothGatt?,
         characteristic: BluetoothGattCharacteristic?
     ) {
-        super.onCharacteristicChanged(gatt, characteristic)
-
         subscription.notify(Result.success(characteristic))
     }
 }
